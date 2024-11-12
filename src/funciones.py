@@ -75,7 +75,7 @@ def plot_numericas(dataframe):
     else:
         pass
 
-    plt.tight_layout
+    plt.tight_layout()
 
 def plot_categoricas(dataframe, paleta = 'bright', tamaño_graficas = (15,10)):
     cols_categoricas = dataframe.columns
@@ -97,7 +97,7 @@ def plot_categoricas(dataframe, paleta = 'bright', tamaño_graficas = (15,10)):
     else:
         pass
 
-    plt.tight_layout
+    plt.tight_layout()
 
 def relacion_vr_categoricas(dataframe, variable_respuesta, paleta = 'bright', tamaño_graficas = (15,10)):
     df_cat = separar_dataframe(dataframe)[1]
