@@ -161,3 +161,30 @@ def detectar_outliers(dataframe, color='red', tamaño_grafica=(15,10)):
                     color=color)
         axes[indice].set_title(f'Outliers de {columna}')
         axes[indice].set_xlabel('')
+
+def plot_outliers_univariados(dataframe, columnas_numericas, tipo_grafica, bins, whis):
+    fig, axes = plt.subplots(nrows=math.ceil(len(columnas_numericas) / 2), ncols=2, figsize= (15,10))
+
+    axes = axes.flat
+
+    for indice,columna in enumerate(columnas_numericas):
+
+        if tipo_grafica.lower() == 'h':
+            sns.histplot(x=columna, data=dataframe, ax= axes[indice], bins= bins)
+
+        elif tipo_grafica.lower() == 'b':
+            sns.boxplot(x=columna, 
+                        data=dataframe, 
+                        ax=axes[indice], 
+                        # whis=whis, #para bigotes
+                        flierprops = {'markersize': 2, 'markerfacecolor': 'red'})
+        else:
+            print('No has elegido grafica correcta')
+    
+        axes[indice].set_title(f'Distribucion columna {columna}')
+        axes[indice].set_xlabel('')
+
+    if len(columnas_numericas) % 2 != 0:
+        fig.delaxes(axes[-1])
+    plt.tight_layout()
+
