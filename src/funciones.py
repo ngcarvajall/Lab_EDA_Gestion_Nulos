@@ -162,7 +162,7 @@ def detectar_outliers(dataframe, color='red', tamaño_grafica=(15,10)):
         axes[indice].set_title(f'Outliers de {columna}')
         axes[indice].set_xlabel('')
 
-def plot_outliers_univariados(dataframe, columnas_numericas, tipo_grafica, bins, whis):
+def plot_outliers_univariados(dataframe, columnas_numericas, tipo_grafica, bins, whis=1.5):
     fig, axes = plt.subplots(nrows=math.ceil(len(columnas_numericas) / 2), ncols=2, figsize= (15,10))
 
     axes = axes.flat
@@ -176,7 +176,7 @@ def plot_outliers_univariados(dataframe, columnas_numericas, tipo_grafica, bins,
             sns.boxplot(x=columna, 
                         data=dataframe, 
                         ax=axes[indice], 
-                        # whis=whis, #para bigotes
+                        whis=whis, #para bigotes
                         flierprops = {'markersize': 2, 'markerfacecolor': 'red'})
         else:
             print('No has elegido grafica correcta')
@@ -187,4 +187,23 @@ def plot_outliers_univariados(dataframe, columnas_numericas, tipo_grafica, bins,
     if len(columnas_numericas) % 2 != 0:
         fig.delaxes(axes[-1])
     plt.tight_layout()
+
+def identificar_outliers_iqr(dataframe,columnas_numericas ,k =1.5):
+    diccionario_outliers = {}
+    for columna in columnas_numericas:
+        Q1, Q3 = np.nanpercentile(dataframe[columna], (25,75)) #esta no da problemas con nulos
+        iqr = Q3 -Q1
+
+        limite_superior = Q3 + (iqr * k)
+        limite_inferior = Q1 - (iqr * k)
+
+        condicion_superior = dataframe[columna] > limite_superior
+        condicion_inferior = dataframe[columna] < limite_inferior
+
+        df_outliers = dataframe[condicion_superior | condicion_inferior]
+        print(f'La columna {columna.upper()} tiene {df_outliers.shape[0]} outliers')
+        if not df_outliers.empty: #hacemos esta condicion por si acaso mi columna no tiene outliers
+            diccionario_outliers[columna] = df_outliers
+
+    return diccionario_outliers
 
