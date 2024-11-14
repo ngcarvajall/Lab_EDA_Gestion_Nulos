@@ -77,27 +77,57 @@ def plot_numericas(dataframe):
 
     plt.tight_layout()
 
-def plot_categoricas(dataframe, paleta = 'bright', tamaño_graficas = (15,10)):
-    cols_categoricas = dataframe.columns
-    num_filas = math.ceil(len(cols_categoricas) / 2)
-    fig, axes = plt.subplots(nrows = num_filas, ncols = 2, figsize = tamaño_graficas)
-    axes = axes.flat
 
-    for indice, columna in enumerate(cols_categoricas): # usamos countplot para categoricas
-        sns.countplot(x=columna,
-                      data=dataframe,
-                      ax = axes[indice], 
-                      palette=paleta, 
-                      order = dataframe[columna].value_counts().index)
+
+
+
+def plot_categoricas(dataframe, paleta="bright", tamano_grafica=(15, 8)):
+    """
+    Grafica la distribución de las variables categóricas del DataFrame.
+
+    Parameters:
+    - color (str, opcional): El color a utilizar en las gráficas. Por defecto es "grey".
+    - tamaño_grafica (tuple, opcional): El tamaño de la figura de la gráfica. Por defecto es (15, 5).
+    """
+    # dataframe_cat = self.separar_dataframe()[1]
+    _, axes = plt.subplots(2, math.ceil(len(dataframe.columns) / 2), figsize=tamano_grafica)
+    axes = axes.flat
+    for indice, columna in enumerate(dataframe.columns):
+        sns.countplot(x=columna, data=dataframe, order=dataframe[columna].value_counts().index,
+                        ax=axes[indice], palette=paleta)
+        axes[indice].tick_params(rotation=0)
         axes[indice].set_title(columna)
-        axes[indice].set_xlabel('')
-        axes[indice].tick_params(rotation = 45)
-    if len(cols_categoricas) % 2 != 0:
-        fig.delaxes(axes[-1])
-    else:
-        pass
+        axes[indice].set(xlabel=None)
 
     plt.tight_layout()
+    plt.suptitle("Distribución de variables categóricas")
+
+
+
+
+
+# def plot_categoricas(dataframe, paleta = 'bright', tamaño_graficas = (12,8)):
+#     cols_categoricas = dataframe.columns
+#     num_filas = math.ceil(len(cols_categoricas) / 2)
+#     fig, axes = plt.subplots(nrows = num_filas, ncols = 2, figsize = tamaño_graficas)
+#     axes = axes.flat
+
+#     for indice, columna in enumerate(cols_categoricas): # usamos countplot para categoricas
+#         sns.countplot(x=columna,
+#                       data=dataframe,
+#                       ax = axes[indice], 
+#                       palette=paleta, 
+#                       order = dataframe[columna].value_counts().index)
+#         axes[indice].set_title(columna)
+#         axes[indice].set_xlabel('')
+#         axes[indice].tick_params(rotation = 45)
+        
+#     """
+#     if len(cols_categoricas) % 2 != 0:
+#         fig.delaxes(axes[-1])
+#     else:
+#         pass"""
+#     plt.tight_layout()
 
 def relacion_vr_categoricas(dataframe, variable_respuesta, paleta = 'bright', tamaño_graficas = (15,10)):
     df_cat = separar_dataframe(dataframe)[1]
@@ -207,3 +237,33 @@ def identificar_outliers_iqr(dataframe,columnas_numericas ,k =1.5):
 
     return diccionario_outliers
 
+def visualizar_categoricas(dataframe, lista_col_cat, variable_respuesta, bigote=1.5, paleta = 'bright',tipo_grafica='boxplot', tamaño_grafica=(15,10), metrica_barplot = 'mean',):
+    num_filas = math.ceil(len(lista_col_cat)/ 2)
+
+    fig, axes = plt.subplots(nrows=num_filas, ncols=2, figsize=tamaño_grafica)
+
+    axes = axes.flat
+
+    for indice, columna in enumerate(lista_col_cat):
+        if tipo_grafica.lower()=='boxplot':
+            sns.boxplot(x=columna, 
+                        y=variable_respuesta, 
+                        data=dataframe,
+                        whis=bigote,
+                        hue=columna,
+                        legend=False,
+                        ax= axes[indice])
+            
+        elif tipo_grafica.lower()== 'barplot':
+            sns.barplot(x=columna,
+                        y=variable_respuesta,
+                        ax = axes[indice],
+                        data=dataframe,
+                        estimator=metrica_barplot,
+                        palette= paleta)
+        else:
+            print('No has elegido una grafica correcta')
+
+        axes[indice].set_title(f'Relacion {columna} con {variable_respuesta}')
+        axes[indice].set_xlabel('')
+        plt.tight_layout()
